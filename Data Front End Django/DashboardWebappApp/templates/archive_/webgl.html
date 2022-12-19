@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>WebGL Demo</title>
+    
+    <script src="https://unpkg.com/d3"></script>
+    <script src="https://unpkg.com/d3fc"></script>
+</head>
+
+<style>
+
+    body {
+        color: #1364f1;
+        font-size: small;
+        font-family: sans-serif;
+        height: calc(100vh - 2em);
+        margin: 1em;
+        display: flex;
+    }
+
+    body > * {
+        flex: auto;
+    }
+
+    /* .domain, .gridline-y, .gridline-x, .annotation-line>line {
+        stroke: currentColor;
+        stroke-opacity: 0.1;
+    }
+
+    body {
+        flex-direction: column;
+    }
+    #controls {
+        flex-grow: 0;
+    } */
+</style>
+    
+<body>
+    <!-- <div id="chart"></div> -->
+    <d3fc-canvas set-webgl-viewport></d3fc-canvas>
+</body>
+
+<script>
+
+    const t6 = performance.now();
+    var height = 5000, width = 2500;
+
+    const parse = (item) => {
+        for (let m in item) {
+            if (m == "time") item[m] = Date.parse(item[m]); else item[m] = +item[m];
+        }
+        return item;
+    };
+    const t2 = performance.now();
+    var data = d3
+        .csvParse(csvString);
+    data.forEach(d => parse(d) );
+    const labels = data.columns;
+    const t3 = performance.now();
+    console.log(`Parsing the data took ${t3 - t2} milliseconds.`);
+
+    var valueMax = -1*Number.MAX_SAFE_INTEGER;
+    var valueMin = Number.MAX_SAFE_INTEGER;
+    const t0 = performance.now();
+    {
+        for (let i = 1; i < labels.length; i++) {
+            let max = d3.max(data, function (d) { return d[labels[i]]});
+            let min = d3.min(data, function (d) { return d[labels[i]]});
+            valueMax = Math.max(valueMax, max);
+            valueMin = Math.min(valueMin, min);
+        }
+    }
+    const t1 = performance.now();
+    console.log(`Finding min and max took ${t1 - t0} milliseconds.`);
+    const xScale = d3.scaleTime().range([0, width]);
+    xScale.domain(d3.extent(data, function(d) { return d.time; }));
+    const yScale = d3.scaleLinear().range([height, 0]);
+    yScale.domain([valueMin, valueMax]);
+
+    var color = d3.scaleOrdinal()
+        .domain(labels)
+        .range(d3.schemeSet2);
+
+    const line = (tag) => {
+        return fc
+            .seriesWebglPoint()
+            .crossValue(d => d.time)
+            .mainValue(d => d[tag])
+            .decorate((program, data) => {
+                fc.webglFillColor().value(d => {
+                    const rgba = d3.color(color(tag));
+                    return [rgba.r / 255, rgba.g / 255, rgba.b / 255, rgba.opacity];
+                }).data(data)(program);
+            });
+    };
+
+    var lines = [];
+    labels.forEach(l => lines.push(line(l)));
+
+    const t4 = performance.now();
+    const series = fc
+        .seriesWebglMulti()
+        .xScale(xScale)
+        .yScale(yScale)
+        .series(lines);
+
+    let pixels = null;
+    let frame = 0;  
+    let gl = null;
+
+    const container = document.querySelector('d3fc-canvas');
+
+    d3.select(container)
+        .on('click', () => {
+            const domain = xScale.domain();
+            const max = Math.round(domain[1] / 2);
+            xScale.domain([0, max]);
+            container.requestRedraw();
+        })
+        .on('measure', event => {
+            const { width, height } = event.detail;
+            xScale.range([0, width]);
+            yScale.range([height, 0]);
+
+            gl = container.querySelector('canvas').getContext('webgl');
+            series.context(gl);
+        })
+        .on('draw', () => {
+            if (pixels == null) {
+                pixels = new Uint8Array(
+                    gl.drawingBufferWidth * gl.drawingBufferHeight * 4
+                );
+            }
+            performance.mark(`draw-start-${frame}`);
+            series(data);
+            // Force GPU to complete rendering to allow accurate performance measurements to be taken
+            gl.readPixels(
+                0,
+                0,
+                gl.drawingBufferWidth,
+                gl.drawingBufferHeight,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                pixels
+            );
+            performance.measure(`draw-duration-${frame}`, `draw-start-${frame}`);
+            frame++;
+        });
+
+    container.requestRedraw();
+    const t5 = performance.now();
+    console.log(`Drawing took ${t5 - t4} milliseconds.`);
+
+    const t7 = performance.now();
+    console.log(`Everything combined took ${t7 - t6} milliseconds.`);
+
+</script>
+
+</html>

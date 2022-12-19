@@ -1,0 +1,200 @@
+{% load static %}
+{% csrf_token %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>PI Database Application</title>
+		<script language="JavaScript" type="text/javascript" src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    	<script language="JavaScript" type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+		<link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+		<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+		<!-- <link rel="stylesheet" href="{% static 'css/main.css' %}"> -->
+		<style>
+
+			.userRank {
+				cursor: pointer;
+				position: relative;
+				padding: 12px 8px 12px 40px;
+				margin-left: 10px;
+				margin-right: 10px;
+				background: #0784b5;
+				font-size: 18px;
+				transition: 0.2s;
+				border-radius: 5px;
+        	}
+
+			.userRank:hover {
+				background: #ddd;
+			}
+
+			.userNavigation {
+				background-color: rgba(7,132,181);
+			}
+
+			.userBackgroundDark{
+				background-color: rgba(25,36,40);
+				border-color: rgba(25,36,40);
+			}
+			.userBackgroundMediumDark{
+				background-color: rgba(45,56,60);
+				border-color:rgba(45,56,60);
+			}
+			.userBackgroundLightDark{
+				background-color: rgba(65,76,80);
+				border-color: rgba(65,76,80);
+			}
+
+			.card {
+				border-color: rgba(65,76,80);
+
+			}
+
+			.sidebar {
+				width: 25rem!important;
+			}
+
+			.cardResized {
+				height: 100%;
+				/* min-height: 800px; */
+			}
+
+			.landingpage {
+				align-content: center;
+				text-align: center;
+			}
+
+			h1 {
+				align-content: center;
+				text-align: center;
+				/* padding-left: 20%; */
+				font-size: 50px;
+				margin: 0;
+			}
+
+			.landingbuttons {
+				align-content: center;
+				align-items: center;
+			}
+
+			.landingbuttons .button {
+				width: 20%;
+				margin: auto;
+				height: 20%;
+				background-color: lightgray;
+				border-radius: 5%;
+			}
+
+			.landingbuttons .button label {
+				font-weight: bold;
+				font-size: 20px;
+			}
+
+			.landingbuttons .button a {
+				text-decoration: none;
+				color: black;
+			}
+
+			#row1 .col-lg-6 {
+				max-width: 33%;
+			}
+
+			#row1 img {
+				float: left;
+				width:  100%;
+				height: 40vh;
+				object-fit: cover;
+			}
+
+			#row2 .col-lg-6 {
+				max-width: 50%;
+			}
+
+			#row2 img {
+				float: left;
+				width:  100%;
+				height: 40vh;
+				object-fit: cover;
+			}
+
+		</style>
+	</head>
+	<body style="background-color: rgba(25,36,40);">
+
+		<div class="userBackgroundDark">
+			<h1 style="color: white;">
+				PI Datawarehouse User Interface
+			</h1>
+		</div>
+
+		<div id="content-wrapper" class="userBackgroundDark d-flex flex-column" style="background-color: rgba(25,36,40);">
+			<div class="container-fluid">
+				<div class="row" id="row1">
+					<div class="col-xl-6 col-lg-6" id="brownCard">
+						<div class="card shadow mb-4">
+							<div
+								class="userBackgroundMediumDark card-header py-2 d-flex flex-row align-items-center justify-content-between">
+								<h2 class="m-0 font-weight-bold">Brown</h2>
+							</div>
+							<a href="/brown">
+								<img src="https://bi.sp.lgeenergy.int/sites/GenEngineering/PublishingImages/Pages/Brown/EW_Brown.jpg" id="Tile_WPQ5_1_7" alt="Brown">
+							</a>
+						</div>
+					</div>
+
+					<div class="col-xl-6 col-lg-6" id="caneRunCard">
+						<div class="card shadow mb-4">
+							<div
+								class="userBackgroundMediumDark card-header py-2 d-flex flex-row align-items-center justify-content-between">
+								<h2 class="m-0 font-weight-bold">Cane Run</h2>
+							</div>
+							<a href="/canerun">
+								<img src="https://bi.sp.lgeenergy.int/sites/GenEngineering/PublishingImages/CR7.png" id="Tile_WPQ5_1_7" alt="Cane Run">
+							</a>
+						</div>
+					</div>
+
+					<div class="col-xl-6 col-lg-6" id="ghentCard">
+						<div class="card shadow mb-4">
+							<div
+								class="userBackgroundMediumDark card-header py-2 d-flex flex-row align-items-center justify-content-between">
+								<h2 class="m-0 font-weight-bold">Ghent</h2>
+							</div>
+							<a href="/ghent">
+								<img src="https://bi.sp.lgeenergy.int/sites/GenEngineering/PublishingImages/Pages/Ghent/GhentatNight.jpg" id="Tile_WPQ5_1_7" alt="Ghent">
+							</a>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row" id="row2">
+					<div class="col-xl-6 col-lg-6 h-75 d-inline-block" id="millCreekCard">
+						<div class="card shadow mb-4">
+							<div
+								class="userBackgroundMediumDark card-header py-2 d-flex flex-row align-items-center justify-content-between">
+								<h2 class="m-0 font-weight-bold">Mill Creek</h2>
+							</div>
+							<a href="/millcreek">
+								<img src="https://bi.sp.lgeenergy.int/sites/GenEngineering/PublishingImages/Pages/Mill-Creek/transcodedwallpaper.jpg" id="Tile_WPQ5_1_7" alt="Mill Creek">
+							</a>
+						</div>
+					</div>
+
+					<div class="col-xl-6 col-lg-6 h-75 d-inline-block" id="trimbleCard">
+						<div class="card shadow mb-4">
+							<div
+								class="userBackgroundMediumDark card-header py-2 d-flex flex-row align-items-center justify-content-between">
+								<h2 class="m-0 font-weight-bold">Trimble County</h2>
+							</div>
+							<a href="/trimble">
+								<img src="https://bi.sp.lgeenergy.int/sites/GenEngineering/PublishingImages/Pages/Trimble-County/Trimble.jpg" id="Tile_WPQ5_1_7" alt="Trimble">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

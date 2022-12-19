@@ -1,0 +1,274 @@
+#opaque {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: black;
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+#loaderDiv {
+    position: fixed;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loadingLabel {
+    color: #f1f1f1; 
+    font-size: 40px; 
+    position: fixed; 
+    top: 105%; 
+    left: 7%;
+}
+
+.userRank {
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background: #0784b5;
+    font-size: 18px;
+    transition: 0.2s;
+    border-radius: 5px;
+}
+
+.userRank:hover {
+    background: #ddd;
+}
+
+.userNavigation {
+    background-color: rgba(7,132,181);
+}
+
+.userBackgroundDark{
+    background-color: rgba(25,36,40);
+    border-color: rgba(25,36,40);
+}
+.userBackgroundMediumDark{
+    background-color: rgba(45,56,60);
+    border-color:rgba(45,56,60);
+}
+.userBackgroundLightDark{
+    background-color: rgba(65,76,80);
+    border-color: rgba(65,76,80);
+}
+
+.card {
+    border-color: rgba(65,76,80);
+}
+
+.sidebar {
+    width: 35rem!important;
+}
+
+.cardResized {
+    height: 100%;
+    min-height: 800px;
+}
+
+.attribute-tag {
+    color: white;
+    align-content: center;
+}
+
+.collapsible {
+    background-color: rgba(255, 255, 255, 0);
+    cursor: pointer;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+.active, .collapsible:hover {
+    background-color: #555;
+}
+
+.tag-content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.a button {
+    font-size: 10px;
+}
+
+#linediv {
+    color: #000000;
+    font-size: small;
+    font-family: sans-serif;
+    height: calc(100vh - 2em);
+    margin: 1em;
+    /* display: flex; */
+    border-color: rgba(25,36,40);
+    width: 200%;
+}
+
+#linediv > * {
+    flex: auto;
+}
+
+.domain, .gridline-y, .gridline-x, .annotation-line>line {
+    stroke: currentColor;
+    stroke-opacity: 0.1;
+}
+
+#linediv {
+    flex-direction: column;
+}
+#controls {
+    flex-grow: 0;
+}
+
+.listItem {
+    background: #fff;
+    width: auto;
+    height: 30px;
+    border-radius: 5px;
+
+  }
+
+* {
+box-sizing: border-radius;
+    font-family: 'Rubik', sans-serif;
+}
+
+.items-body {
+    padding: 10px;
+    /*margin: 10px;*/
+    display: grid;
+    grid-gap: 10px;
+}
+body {
+    color: white;
+}
+.items-body-content {
+    padding: 5px;
+    padding-right: 20px;
+    display: flex;
+    grid-template-columns: 10fr 1fr;
+    background-color: #4c516d;
+    font-size: 13px;
+    grid-gap: 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+#linediv.col-sm-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+#chartcard.over {
+    border: 3px dotted #1d8cf8;
+}
+
+.items-body-content:hover {
+    background-color: #1d8cf8;
+    color: white;
+}
+
+.items-body-content i {
+    align-self: center;
+    font-size: 15px;
+    font-weight: bold;
+    animation: icon 1.5s infinite forwards;
+}
+.search {
+padding-left: 3rem;
+}
+
+@keyframes icon {
+0%,100%{
+  transform: translate(0px);
+}
+50% {
+  transform: translate(3px);
+}
+}
+
+.itemNew{
+    display: flex;
+}
+
+.card2 {
+    margin-bottom: 10px;
+}
+
+.generalNav {
+    height: 11rem;
+    z-index: 1;
+    overflow-x: hidden;
+}
+
+.lastStack {
+  background-color: #1d8cf8;
+}
+
+/*SCROLL BAR*/
+/* width */
+::-webkit-scrollbar {
+width: 10px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+background: #1e1e2f;
+border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+background: #3e3e4f;
+border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+background: #1d8cf8;
+}
+
+g > text {
+    fill: white;
+}
+
+.colorLabel {
+    width: 16px; 
+    height: 16px; 
+    margin-top: 2px;
+}
+
+.menuBtn {
+    width: 170px;
+}

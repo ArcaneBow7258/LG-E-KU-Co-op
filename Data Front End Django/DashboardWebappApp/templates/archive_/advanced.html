@@ -1,0 +1,130 @@
+{% load static %}
+<script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.27.1/js/jquery.terminal.min.js"></script>
+<!-- <script src="../static/js/jquery.terminal.min.js"></script> -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.27.1/css/jquery.terminal.min.css" rel="stylesheet"/>
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<!-- Bootstrap -->
+
+<style>
+    .terminal{
+        height: 50% !important; 
+    }
+</style>
+
+<div class="col-md-12">
+    <div class="row" style="height: 100%;">
+        <div class="col-md-6" style="border-style: double; padding: 0 0 0 10px;">
+            <textarea id="textEditor" style="height: 100%; width: 100%;">otterdf = trimbleData["U1C23"].filter(((trimbleData["U1C23"].tag == 1501230004) | (trimbleData["U1C23"].tag == 1501230005)) & (trimbleData["U1C23"].time >= "2021-6-25 01:00:00") & (trimbleData["U1C23"].time < "2021-6-25 02:00:00"))
+                
+b = otterdf.toPandas()
+df_pivot = b.pivot(index='time', columns='tag',values = 'value')
+df_feat = df_pivot.drop(labels=1501230004, axis=1)
+X_train, X_test, y_train, y_test = train_test_split(df_feat, df_pivot[1501230004])
+ridge = Ridge(alpha = 0.1, normalize = True)
+mod_ridge = ridge.fit(X_train, y_train)
+ridge_predicted = mod_ridge.predict(X_test)
+expected = y_test
+
+plt.scatter(expected, ridge_predicted)
+plt.xlabel('True MW')
+plt.ylabel('Predicted MW')
+plt.plot([0, 50], [0, 50], '--k')
+plt.savefig('/u00/djangoTestSiteRyan/DashboardNew/DashboardWebappApp/static/pics/p1.png')
+            </textarea>
+        </div>
+        <div class="col-md-6">
+            <div class="row" style="height: 50%; border-style: double;">
+                <img src="{% static 'pics/p1.png' %}" style="width: 100%; height: 100%" id="plotImage">
+            </div>
+            <div class="row" id="term_demo" style="border-style: double;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //const csrftoken = getCookie('csrftoken');
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function reloadImage(){
+        imageObject = document.getElementById('plotImage');
+        otter = imageObject.src;
+        imageObject.src = otter;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    jQuery(function($, undefined) {
+        $('#term_demo').terminal(function(statement) {
+            debugger;
+            otter = this;
+            command = "eval";
+            if(statement.includes("=")){
+                command = "exec";
+            }
+            if(statement.includes("import")){
+                command = "import";
+            }
+            if (statement !== '') {
+                if(statement.includes(".savefig")){
+                    debugger;
+                    statementSplitArray = statement.split("/");
+                    filePart = statementSplitArray[statementSplitArray.length - 1];
+                    fileName = filePart.split(".")[0];
+                    newFileName = fileName + '_' + Math.random();
+                    statement = statement.replace(fileName,newFileName);
+                }
+                $.ajax({
+                    url:"terminalCommand",
+                    type: "POST",
+                    async: "true",
+                    data: { "csrfmiddlewaretoken": csrftoken, "command": command, "statement": statement },
+                    success:function(data){
+                        debugger;
+                        otter.echo(new String(data));
+                        document.getElementById("plotImage").src = "/static/pics/" + newFileName + ".png";
+                    },
+                    error: function(data){
+                        debugger;
+                        otter.error(new String(data));
+                    }
+                });
+                // try {
+                //     var result = window.eval(command);
+                //     if (result !== undefined) {
+                //         this.echo(new String(result));
+                //     }
+                // } catch(e) {
+                //     this.error(new String(e));
+                // }
+            } else {
+            this.echo('');
+            }
+        }, {
+            greetings: 'Welcome to the pyspark console',
+            name: 'js_demo',
+            height: 200,
+            prompt: 'pyspark> '
+        });
+    });
+</script>

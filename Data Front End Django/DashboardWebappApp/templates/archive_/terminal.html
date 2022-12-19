@@ -1,0 +1,80 @@
+<script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.27.1/js/jquery.terminal.min.js"></script>
+<!-- <script src="../static/js/jquery.terminal.min.js"></script> -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.27.1/css/jquery.terminal.min.css" rel="stylesheet"/>
+<!-- <script src="https://unpkg.com/js-polyfills/keyboard.js"></script> -->
+<body id="term_demo">
+    <!-- <div>Hello World</div> -->
+</body>
+<script>
+    //const csrftoken = getCookie('csrftoken');
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    jQuery(function($, undefined) {
+        $('#term_demo').terminal(function(command) {
+            debugger;
+            otter = this;
+            if (command !== '') {
+                $.ajax({
+                    url:"terminalCommand",
+                    type: "POST",
+                    async: "true",
+                    data: { "csrfmiddlewaretoken": csrftoken, "command": "eval", "statement": command },
+                    success:function(data){
+                        debugger;
+                        otter.echo(new String(data));
+                        // var data = JSON.parse(data);
+                        // console.log(data);
+
+                        // let keys = Object.keys(data);
+                        // keys.forEach(function(key) {
+                        //     tagLabels.push(key);
+                        //     tagPlants.push(plant_name);
+
+                        //     let div = document.createElement("div");
+                        //     div.setAttribute("class", "hierarchy items-body-content tagFilters")
+                        //     div.setAttribute("id", key)
+                        //     div.setAttribute("onclick", "removeTag(this);")
+                        //     div.innerHTML = `<i class="far fa-times"></i> ${key}`;
+                        //     document.getElementById("nav2").appendChild(div);
+
+                        // });
+
+                        //createLineChart();
+                    }
+                });
+                // try {
+                //     var result = window.eval(command);
+                //     if (result !== undefined) {
+                //         this.echo(new String(result));
+                //     }
+                // } catch(e) {
+                //     this.error(new String(e));
+                // }
+            } else {
+            this.echo('');
+            }
+        }, {
+            greetings: 'JavaScript Interpreter',
+            name: 'js_demo',
+            height: 200,
+            prompt: 'js> '
+        });
+    });
+</script>

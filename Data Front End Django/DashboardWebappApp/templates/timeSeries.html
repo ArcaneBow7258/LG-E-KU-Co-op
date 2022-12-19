@@ -1,0 +1,298 @@
+{% load static %}
+{% csrf_token %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>PDW Time Series</title>
+
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/jquery-1.12.4.js' %}"></script>
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+	<script language="JavaScript" type="text/javascript" src="{% static 'js/d3/d3-annotation.js' %}"></script>
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    
+
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/d3/d3.v7.min.js' %}"></script>
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/d3/d3-scale-chromatic.v1.min.js' %}"></script> -->
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/d3/d3fc.js' %}"></script> 
+    <!--<script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    
+    <script src="https://unpkg.com/d3fc"></script>-->
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/data-utilities.js' %}"></script>
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/charts.js' %}"></script>
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/timeSeries.js' %}"></script>
+	<script language="JavaScript" type="text/javascript" src="{% static 'js/bootstrap-notify.js' %}"></script>
+	<script language="JavaScript" type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script language="JavaScript" type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <!-- <script language="JavaScript" type="text/javascript" src="{% static 'js/regression.js' %}"></script> This is used as a module with import -->
+    <!-- <link rel="stylesheet" href="{% static 'css/all.min.css' %}"> -->
+	
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/black-dashboard/nucleo-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/faall.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/black-dashboard/black-dashboard.css' %}">
+    <!--<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">-->
+	<style>
+	have to all this relative to screen height due to windows scaler (100-125-150);
+	lot of nitpicking and editing values but base it on 100% and it will scale up
+	hard coded left column to 23vw; if yo uchange left column make sure to change the content div size as well
+	.navbar{ navbar ontop also;
+			height:10vh
+		}
+	.card-chart{
+		height: 85vh;
+		width:74vw;
+	}
+	.card-chart > * {
+		height:85vh; 
+		width:74vw;
+	}
+	.linediv{
+		 you have to go down and edit it 75vh rn
+		i also manually a col-12 to 75vh 73 vw
+	}
+	.nav2{
+		height: 7vh;	
+		we have stuff in chart.js to change the graph height to bit shorter than card-chart but its manual
+		}
+	
+</style>
+
+</head>
+
+<body id="page-top" onload="preloadTags();">
+    <div style="background-color: rgba(200,200,200,0.3); width: 100%; height: 150%; position: absolute; z-index: 10" id="stopRightThere"> </div>
+    <div class="wrapper">
+      <div class="sidebar" data="blue" style="width: 23vw !important;background:#27293d !important;margin-top: 10vh;margin-left: 1vw;">
+        <!--
+          Tip 1: You can change the color of the sidebar using: data="blue | green | orange | red"
+      -->
+        
+        <div class="sidebar-wrapper navigation" style="width: 23vw">
+          <!-- <div class="logo">
+            <div class="selection d-grid gap-4 col-12">
+              <div class="btn btn-info animation-on-hover" id="navigation" onclick="toggleNav(this);"><i class="far fa-compass fa-lg"></i></div>
+              <div class="btn animation-on-hover active" id="filter" onclick="toggleNav(this);"><i class="fas fa-cogs fa-lg"></i></div>
+              <div class="btn animation-on-hover active" id="future" onclick="toggleNav(this);"><i class="fas fa-square-root-alt fa-lg"></i></div>
+            </div>
+          </div>
+          <hr> -->
+          <div class="navigation" id="nav1">
+            <div id="tagNavDiv">
+              <div class="card col-md-12 card2">
+                <div class="card-header">
+                  <h5 class="card-category">Tags</h5>
+                </div>
+                <div class="card-body items-body" id="tagNav">
+                </div>
+              </div>
+            </div>
+              <!--
+            <div class="navigationTop">
+              <div class="card col-md-12 card2">
+                    <div class="card-header">
+                      <h5 class="card-category">Navigation</h5>
+                      <div class="form-inline my-2 my-lg-9">
+						  <div id = "dropdown" class="dropdown">
+                        <input class="form-control mr-sm-12" type="search" placeholder="Search" id="searchInput" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" onclick="search()">Search</button>
+						  </div>
+                      </div>
+                    </div>
+                    <div class="card-body items-body" id="home">
+                      <div id = "root" class="hierarchy items-body-content itemNew lastStack" onclick = "createChildren(this);"> 
+                          <i class="fa fa-home" ></i> All Plants
+                      </div>
+                    </div>
+                    <div class="card-body items-body" id="stack">
+                      
+                    </div>
+                </div>
+              </div>  
+            <div class="sidenav elements">
+                <div class="card col-md-12 card2">
+                  <div class="card-header">
+                    <h5 class="card-category">Elements</h5>
+                  </div>
+                  <div class="card-body items-body generalNav" id="elementsHolder">
+                      <div id = "5FBE1494-A485-11E7-A07F-F81654B3DAFC" class="hierarchy  items-body-content itemNew" onclick = "createChildren(this);"> 
+                          <i class="fa fa-caret-right" ></i> Brown Generating Station
+                      </div>
+                      <div id = "5FBE149A-A485-11E7-A07F-F81654B3DAFC" class="hierarchy items-body-content itemNew" onclick = "createChildren(this);"> 
+                          <i class="fa fa-caret-right" ></i> Cane Run Station
+                      </div>
+                      <div id = "5FBE1491-A485-11E7-A07F-F81654B3DAFC" class="hierarchy items-body-content itemNew" onclick = "createChildren(this);"> 
+                          <i class="fa fa-caret-right" ></i> Ghent Generating Plant
+                      </div>
+                      <div id = "5FBE1497-A485-11E7-A07F-F81654B3DAFC" class="hierarchy items-body-content itemNew" onclick = "createChildren(this);"> 
+                          <i class="fa fa-caret-right" ></i> Mill Creek Station
+                      </div>
+                      <div id = "5FBE148E-A485-11E7-A07F-F81654B3DAFC" class="hierarchy items-body-content itemNew" onclick = "createChildren(this);"> 
+                          <i class="fa fa-caret-right" ></i> Trimble County Station
+                      </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="sidenav">
+              <div class="card col-md-12 card2">
+                  <div class="card-header">
+                    <h5 class="card-category">Attributes</h5>
+                  </div>
+                  <div class="card-body items-body generalNav" id = "attributesHolder">
+                      
+                </div>
+              </div>
+            </div>-->
+          </div>
+ 
+          <div class="filters" id="nav3" style="display: none;">
+            <a href="#" class="btn btn-primary">Coming soon</a>
+          </div>
+        </div>
+      </div>
+      <div class="main-panel" data="blue">
+         
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-absolute navbar-transparent" >
+          <div class="container-fluid">
+            <div class="navbar-wrapper">
+              <div class="navbar-toggle d-inline">
+                <button type="button" class="navbar-toggler">
+                  <span class="navbar-toggler-bar bar1"></span>
+                  <span class="navbar-toggler-bar bar2"></span>
+                  <span class="navbar-toggler-bar bar3"></span>
+                </button>
+              </div>
+              <a class="navbar-brand" href="">Pi Data Warehouse: Time Series</a>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-bar navbar-kebab"></span>
+              <span class="navbar-toggler-bar navbar-kebab"></span>
+              <span class="navbar-toggler-bar navbar-kebab"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navigation">
+              <ul class="navbar-nav ml-auto">
+                <li class="search-bar input-group">
+                <a class="btn btn-info animation-on-hover menuBtn" href="/searchPage" type="button">Search</a>
+                </li>
+                <li class="search-bar input-group">
+                <a class="btn btn-default animation-on-hover menuBtn" href="/timeSeries" type="button">Time Series</a>
+                </li>
+                <li class="search-bar input-group">
+                <a class="btn btn-info animation-on-hover menuBtn" href="/trends" type="button">Regression</a>
+                </li>
+                <li class="search-bar input-group">
+                <div class="btn-group dropdown">
+                  <button id="advancedButton" type="button" class="btn btn-info  animation-on-hover menuBtn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Advanced
+                  </button>
+                  <div id="advancedDropdown" class="dropdown-menu">
+                    <!-- Dropdown menu links -->
+                    <a href="/explore" class="dropdown-item"> Matrix</a>
+                    <a href="/aboveBelow" class="dropdown-item"> Above/Below </a>
+                  </div>
+                  </div>
+                </li>
+                
+                  <li class="search-bar input-group">
+                   <div class="btn-group dropdown">
+                  <button id="helpButton" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Help
+                  </button>
+                  <div id="helpDropdown" class="dropdown-menu">
+                    <!-- Dropdown menu links 
+                    <a data-toggle="modal" data-target="#helpModal" class="dropdown-item"> User Guide</a>-->
+                    <a href="/admin" target="_blank" class="dropdown-item"> Admin </a>
+                  </div>
+                  </div>
+                  </li>
+                </ul>
+
+                      
+                      
+                  </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <div class="modal modal-search fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModal" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="SEARCH">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <i class="tim-icons icon-simple-remove"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Navbar -->
+        <div class="content" style="padding: 10vh 2.2vw 4.4vh 25vw !important;">
+          <div class="row" id="chartcard">
+            <div class="col-12" style="height:75vh width:73vw">
+              <div class="card card-chart">
+                <div class="card-header " style="padding-top: 1.5vh; padding-left: 1vw;padding-right: 1vw;">
+                  <div class="row">
+                    <div id="linediv" class="col-sm-6 text-left" style="height:76vh;margin-top: 0px;margin-bottom: 0px;">
+                       <!--<d3fc-canvas use-device-pixel-ratio set-webgl-viewport></d3fc-canvas> -->
+						<div id="chart">
+                    </div>
+                </div>		
+			</div>
+			<div class="row" style="text-align: center; padding-bottom: .6rem;">
+				<div class= "col-lg-5">
+                    <div class="filters" id="nav2">
+						<label>Global Time Filter: </label>
+						<input type="datetime-local" id="global-min" ></input>
+						<input type="datetime-local" id="global-max" ></input>
+                        <label for="timeInterval">Time Interval</label>
+                        <select id="timeInterval" >
+                            <option selected="">1m</option>
+                            <option>1h</option>
+                            <option>1d</option>
+                            <option>1w</option>
+                            <option>1mo</option>
+                        </select>
+						<!--<button id="updateGlobalTime" class = "btn btn-default">Update</button> -->
+					</div>
+				</div>
+                  <div class= "col-lg-2">
+					  <button id= "render" class="btn btn-primary">Render </button>
+                  </div>
+				  <div class= "col-lg-2">
+					  <button id= "download" class="btn btn-success">Download CSV </button>
+				  </div><!--
+					<div class= "col-lg-4">
+						<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Graph Type </button>
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item" href="#">Scatter</a>
+								<a class="dropdown-item" href="#">Line</a>
+								-->
+							</div>
+						</div>
+					  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+
+</html>
